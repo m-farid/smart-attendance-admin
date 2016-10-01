@@ -3,78 +3,308 @@ HOST: http://polls.apiblueprint.org/
 
 # Smart Attendance Admin API
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+After admin finishes entering all the information the API should insert all the data into the 'companies'
+and 'sold_beacons' tables.
 
-## Questions Collection [/questions]
+## company beacon registration [/CompanyRegistration]
 
-### List All Questions [GET]
+### Company beacon registration [POST]
 
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
-
-+ Request (application/json)
++ Request (text/html)
 
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
+            "company_name(En)": "Unilever",
+            "company_name(Ar)": "يونيليفر",
+            "commercial register": "1234-1111-5667",
+            "Website": "www.Unilever.com",
+            
+            "contact_name": "Ahmed",
+            "company_phone": "+203-58225822",
+            "contact_mobile": "+201010101010",
+            "contact_email": "Ahmed@unilever.com",
+            "fax": "55555",
+            "postal_code": "44444",
+            "country": "Egypt",
+            "city": "Alexandria",
+            "Address": "55, El-geish road",
+            
+            "beacon_mac": "68:44:fa:8h:ff:al:pq",
+            "beacon_serial": "abcc-89ad-polf",
+            "beacon_name": "Entrance hall",
+            "distributer_name": "Samir & Aly",
+            "buying_date": "09-1-2016",
+            "receipt_number": "2289ql4773"
+            
+        }
+
++ Response 200
+
++ Response 401 (application/json)
+
+        {
+            "error": [{ 
+                "code" : "E001",
+                "Description":"Company name already exists."
+            },
+            { 
+                "code" : "E002",
+                "Description":"Beacon already used."
+            },
+            { 
+                "code" : "E003",
+                "Description":"Invalid beacon MAC."
+            },
+            { 
+                "code" : "E004",
+                "Description":"Invalid beacon serial."
+            }
+            ]
+        }
+        
+## Beacon_registration [/beaconRegistration]
+
+### Beacon registration [POST]
+
+This checks for the beacons the admin enters into his list everytime he clicks 'add beacon' and checks for
+their availability.
+
++ Request (text/html)
+
+        {
+            "beacon_mac": "68:44:fa:8h:ff:al:pq",
+            "beacon_serial": "abcc-89ad-polf",
+            "beacon_name": "Entrance hall"
+        }
+
++ Response 200
+
++ Response 201 (text/html)
+
+        {
+            "beacons": [{ 
+                "beacon_MAC" : "68:44:fa:8h:ff:al:pq",
+                "due_date" : "09-01-2018"
+            }
+            ]
+        }
+        
++ Response 401 (text/html)
+
+        {
+            "error": [{ 
+                "code" : "E002",
+                "Description":"Beacon already used."
+            },
+            { 
+                "code" : "E003",
+                "Description":"Invalid beacon MAC."
+            },
+            { 
+                "code" : "E004",
+                "Description":"Invalid beacon serial."
+            }
             ]
         }
 
-+ Response 201 (application/json)
+## Admin_registration [/adminregistration]
 
-    + Headers
+### Admin registration [POST]
 
-            Location: /questions/2
++ Request (text/html)
 
-    + Body
+        {
+            "Beacon_serial": "12036545250",
+            "username": "Ahmed",
+            "password": "Ahmed123",
+            "confirm_pass": "Ahmed123"
+        }
 
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
++ Response 200
+
++ Response 401 (text/html)
+
+        {
+            "error": [{ 
+                "code" : "E001",
+                "Description":"Invalid Username and Password."
+            },
+            { 
+                "code" : "E002",
+                "Description":"Already Registered User."
             }
+            ]
+        }
+        
+## Admin_verification [/adminverification]
+
+### Admin verification [POST]
+
++ Request (text/html)
+
+        {
+            "verification code": "12h9p"
+        }
+
++ Response 200
+
++ Response 401 (text/html)
+
+        {
+            "error": [{ 
+                "code" : "E009",
+                "Description":"Incorrect verification code."
+            }
+        }
+  
+## company_departments [/CompanyDepartments]
+
+### Company departments [POST]
+
++ Request (text/html)
+
+        {
+            "Department_name(En)": "Human resources",
+            "Department_name(Ar)": "الموارد البشرية"
+        }
+
++ Response 200 (text/html)
+
+        {
+            "response": [{ 
+                "department" : "Human resources"
+            }
+            ]
+        }
++ Response 401 (text/html)
+
+        {
+            "error": [{ 
+                "code" : "E001",
+                "Description":"Department already exists."
+            }
+            ]
+        }
+        
+      
+       
+## Employee_registration [/empRegistration]
+
+### Employees registration [POST]
+
++ Request (text/html)
+
+        {
+            "first_name(En)": "Ahmed",
+            "middle_name(En)": "Tarek",
+            "last_name(En)": "Ashour",
+            
+            "first_name(Ar)": "احمد",
+            "middle_name(Ar)": "طارق",
+            "last_name(Ar)": "عاشور",
+            
+            "Employee number": "S0025",
+            "Department": "Human resources",
+            "Direct manager": "Yasser Mohamed",
+            "Email": "ahmed_tarek@unilever.com",
+            "mobile_num": "+20101010101",
+            "Beacon_name": "First floor"
+            
+        }
+
++ Response 200
+
++ Response 401 (application/json)
+
+        {
+            "error": [{ 
+                "code" : "E001",
+                "Description":"Employee number already used."
+            },
+            { 
+                "code" : "E002",
+                "Description":"Invalid email address."
+            }
+            ]
+        }
+        
+## Employee_beacons [/empbeacons]
+
+### Employee beacons [POST]
+
++ Request (text/html)
+
+        {
+            "Employee name": "Ahmed Ashour",
+            "beacon name": "Meeting room"
+            
+        }
+
++ Response 200 (text/html)
+
+        {
+            "response": [{ 
+                "beacon_name" : "fisrt floor",
+                "employee_number":"S0025.",
+                "employee_name" : "Ahmed Ashour"
+            }
+            ]
+        }
+
+## Mobile app registration [/appRegistration]
+
+### Mobile app registration [POST]
+
++ Request (text/html)
+
+        {
+            "Employee name": "Ahmed Ashour",
+            "username": "a.ashour",
+            "password": "ahmed1234",
+            "sending method": "email"
+        }
+
++ Response 200 
+
++ Response 401 (text/html)
+
+        {
+            "error": [{ 
+                "code" : "E001",
+                "Description":"username already exists."
+            }
+            ]
+        }
+
+## Employee list [/empList]
+
+### Employee list [POST]
+
++ Request (text/html)
+
+        {
+            "admin name": "Aly",
+            "password": "aly1234"
+            
+        }
+
++ Response 200 (text/html)
+
+        {
+            "response": [{ 
+                "beacon_name" : "fisrt floor",
+                "employee_number":"S0025.",
+                "employee_name" : "Ahmed Ashour"
+            }
+            ]
+        }
+
++ Response 401 (text/html)
+
+        {
+            "response": [{ 
+                "Beacon_name" : "First floor",
+                "Employee number":"S0025",
+                "Employee name":"Ahmed Ashour"
+            }
+            ]
+        }
